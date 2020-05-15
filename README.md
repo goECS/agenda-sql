@@ -15,10 +15,10 @@
 	<br>
 </p>
 
-# Agenda offers
+# Agenda SQL offers
 
 - Minimal overhead. Agenda aims to keep its code base small.
-- Mongo backed persistence layer.
+- SQL backed persistence layer.
 - Promises based API.
 - Scheduling with configurable priority, concurrency, and repeating.
 - Scheduling via cron or human readable syntax.
@@ -36,7 +36,7 @@ Agenda is great if you need something that is simple and backed by MongoDB.
 
 | Feature         | Bull          | Bee | Agenda |
 | :-------------  |:-------------:|:---:|:------:|
-| Backend         | redis         |redis| mongo  |
+| Backend         | redis         |redis| sql  |
 | Priorities      | ✓             |     |   ✓    |
 | Concurrency     | ✓             |  ✓  |   ✓    |
 | Delayed jobs    | ✓             |     |   ✓    |
@@ -59,24 +59,21 @@ Install via NPM
 
     npm install agenda
 
-You will also need a working [Mongo](https://www.mongodb.com/) database (v3) to point it to.
+You will also need a working [MySQL/PostgreSQL/SQLite/MSSQL](https://sequelize.org/) database (v5) to point it to.
 
 
 # Example Usage
 
 ```js
-const mongoConnectionString = 'mongodb://127.0.0.1/agenda';
+const sqlConnectionString = 'mysql://127.0.0.1/agenda';
 
-const agenda = new Agenda({db: {address: mongoConnectionString}});
+const agenda = new Agenda({db: {address: sqlConnectionString}});
 
 // Or override the default collection name:
-// const agenda = new Agenda({db: {address: mongoConnectionString, collection: 'jobCollectionName'}});
+// const agenda = new Agenda({db: {address: sqlConnectionString, collection: 'jobCollectionName'}});
 
 // or pass additional connection options:
-// const agenda = new Agenda({db: {address: mongoConnectionString, collection: 'jobCollectionName', options: {ssl: true}}});
-
-// or pass in an existing mongodb-native MongoClient instance
-// const agenda = new Agenda({mongo: myMongoClient});
+// const agenda = new Agenda({db: {address: sqlConnectionString, collection: 'jobCollectionName', options: {ssl: true}}});
 
 agenda.define('delete old users', async job => {
   await User.remove({lastLogIn: {$lt: twoDaysAgo}});
@@ -182,7 +179,7 @@ Agenda will emit a `ready` event (see [Agenda Events](#agenda-events)) when prop
 It is safe to call `agenda.start()` without waiting for this event, as this is handled internally.
 If you're using the `db` options, or call `database`, then you may still need to listen for `ready` before saving jobs.
 
-### mongo(dbInstance)
+### mysql(dbInstance)
 
 Use an existing mongodb-native MongoClient/Db instance. This can help consolidate connections to a
 database. You can instead use `.database` to have agenda handle connecting for you.
